@@ -1,0 +1,36 @@
+tags:
+  - ml_endpoint
+parameters:
+- in: "body"
+  name: "body"
+  description: "Flower parameters"
+  required: true
+  schema:
+    $ref: "#/definitions/flower_parameters"
+responses:
+  default:
+    description: "successful operation"
+definitions:
+  flower_parameters: 
+    type: "object"
+    properties:
+      sepal_length:
+        type: "number"
+        example: 5.1
+        minimum: 0
+        maximum: 15
+      sepal_width:
+        type: "number"
+        example: 2.5
+        minimum: 0
+        maximum: 15
+      petal_length:
+        type: "number"
+        example: 3.2
+        minimum: 0
+        maximum: 15
+      petal_width:
+        type: "number"
+        example: 1.2
+        minimum: 0
+        maximum: 15

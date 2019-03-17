@@ -1,0 +1,26 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = "*"
+flasgger = "*"
+gunicorn = "*"
+python-dotenv = "*"
+scikit-learn = "*"
+pandas = "*"
+
+[dev-packages]
+"flake8" = "*"
+pylint = "*"
+black = "*"
+
+[scripts]
+start = "flask run --reload"
+train = "python train_iris_classifier/train_iris_classifier.py"
+[requires]
+python_version = "3.6"
+
+[pipenv]
+allow_prereleases = true
