@@ -14,7 +14,7 @@ predicting the species of Iris flower, trained on the classic Iris dataset.
 pipenv install && pipenv install --dev
 ```
 
-Copy the example .env file.env file
+Copy the example .env file.
 
 ``` Bash
 cp .env.example .env
