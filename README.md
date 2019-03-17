@@ -2,7 +2,7 @@
 A template for exposing a ml-model in an API endpoint.
 
 The ml-model being exposed is a simple k-nearest neighbors model,
-predicting the species of Iris flower, trained on the classical Iris dataset,     
+predicting the species of Iris flower, trained on the classic Iris dataset.     
 
 ## Requirements
 * Python 3.6 
