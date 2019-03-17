@@ -30,7 +30,7 @@ docker build . -t ml-flask-api-tmplate:latest
 docker run -p 5000:5000 ml-flask-api-tmplate:latest
 ``` 
 To interact with the api through the swagger ui, go to [http://localhost:5000/apidocs](http://localhost:5000/apidocs).
-## Run script that trains the model on the Iris
+## Run script that trains the model on the Iris dataset
 ``` Bash
 pipenv run train
 ```
