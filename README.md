@@ -1,5 +1,5 @@
 # ML Flask API template
-A template for exposing a ml-model in an API endpoint.
+A template for exposing a machine learning model in an API endpoint.
 
 The ml-model being exposed is a simple k-nearest neighbors model,
 predicting the species of Iris flower, trained on the classic Iris dataset.     
@@ -11,7 +11,7 @@ predicting the species of Iris flower, trained on the classic Iris dataset.
 ## Install
 
 ``` Bash
-pipenv install && pipenv install --dev
+pipenv install
 ```
 
 Copy the example .env file.
