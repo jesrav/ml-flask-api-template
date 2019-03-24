@@ -4,8 +4,8 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 # Append project root folder to path
-project_dir = Path(__file__).resolve().parents[1]
-sys.path.append(str(project_dir))
+basedir = Path(__file__).resolve().parents[1]
+sys.path.append(str(basedir))
 
 # Import model class
 from app.ml_models.model_classes.iris_classifier import IrisClassifier
