@@ -3,15 +3,19 @@ tags:
 parameters:
 - in: "body"
   name: "body"
-  description: "Flower parameters"
+  description: "Iris parameters"
   required: true
   schema:
-    $ref: "#/definitions/flower_parameters"
+    $ref: "#/definitions/iris_parameters"
 responses:
-  default:
-    description: "successful operation"
+  200:
+    description: "Predicted Iris flower species"
+    schema:
+      $ref: "#/definitions/predicted_iris_species"
+    examples:
+      species_prediction: "setosa"
 definitions:
-  flower_parameters: 
+  iris_parameters: 
     type: "object"
     properties:
       sepal_length:
@@ -34,3 +38,10 @@ definitions:
         example: 1.2
         minimum: 0
         maximum: 15
+  predicted_iris_species:
+    properties:
+      species_prediction:
+        type: "string"
+        enum: [setosa, versicolor, virginica]
+        description: The Iris flower species predicted
+        
