@@ -11,6 +11,7 @@ predicting the species of Iris flower, trained on the classic Iris dataset.
 ## Install
 
 ``` Bash
+pip install pipenv
 pipenv install
 ```
 
