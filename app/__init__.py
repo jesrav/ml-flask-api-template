@@ -2,11 +2,12 @@ import os
 import logging
 from flask import Flask
 from flasgger import Swagger
-
+# Import blueprints
+from app.ml_endpoint.ml_endpoint import ml_endpoint_bp
+# Import config
 from config import get_config
 
 swagger = Swagger()
-
 
 def create_app(enviroment):
     logging.info("Init app")
@@ -20,7 +21,6 @@ def create_app(enviroment):
     swagger.init_app(app)
 
     logging.info("Register ml endpoint")
-    from app.ml_endpoint import bp as ml_endpoint_bp
     app.register_blueprint(ml_endpoint_bp)
 
     logging.info("Running app")
