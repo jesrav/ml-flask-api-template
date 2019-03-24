@@ -20,12 +20,14 @@ ml_endpoint_bp = Blueprint("ml_endpoint", __name__)
 def example_endpoint():
     # Get posted input from api call    
     inputs = request.get_json()
+    # Make single prediction
     prediction = model.single_prediction(
         sepal_length=float(inputs['sepal_length']),
         sepal_width=float(inputs['sepal_width']),
         petal_length=float(inputs['petal_length']),
         petal_width=float(inputs['petal_width'])
     )
+    # Return prediction
     response = {'species_prediction': prediction}
     response_json = jsonify(response)
     return response_json
