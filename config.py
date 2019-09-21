@@ -14,7 +14,7 @@ class Config(object):
 
 
 class Development(Config):
-    ENVIROMENT = 'development'
+    ENVIRONMENT = 'development'
     DEBUG = True
 
 

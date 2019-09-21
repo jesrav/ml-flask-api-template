@@ -3,13 +3,14 @@ from sklearn.preprocessing import LabelEncoder
 import pickle as pickle
 import pandas as pd
 
+
 class IrisClassifier(object):
-    '''
-    Iris classifier. 
-    Wraps the sklearn k-neares kneighbors class in order to:
+    """
+    Iris classifier.
+    Wraps the sklearn k-nearest kneighbors class in order to:
     - Have fit and train methods take data frames and validate feature names.
     - Have method for predicting single instance, to be used in api.
-    '''
+    """
     def __init__(self ,n_neighbors=5):
         self.n_neighbors = n_neighbors
         self.target = 'species'
