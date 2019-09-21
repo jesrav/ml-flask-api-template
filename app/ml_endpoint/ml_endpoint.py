@@ -4,16 +4,17 @@ from pathlib import Path
 from flask import jsonify, request, Blueprint
 from flasgger.utils import swag_from
 
-# Iris claassifier class
+# Iris classifier class
 from app.ml_models.model_classes.iris_classifier import IrisClassifier
 
 serialized_models_path = Path('app/ml_models/serialized_models/')
 
-# Desirialize model
+# Deserialize model
 model = IrisClassifier().read_model(str(serialized_models_path / 'model.pickle'))
 
 # Blueprint for the endpoint
 ml_endpoint_bp = Blueprint("ml_endpoint", __name__)
+
 
 @ml_endpoint_bp.route("/ml_endpoint", methods=["POST"])
 @swag_from("swagger/ml_endpoint.yaml", validation=True)

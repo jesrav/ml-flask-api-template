@@ -12,7 +12,7 @@ from app.ml_models.model_classes.iris_classifier import IrisClassifier
 
 # Paths
 data_path = Path('train_iris_classifier')
-serialized_models_path = project_dir / Path('app/ml_models/serialized_models/')
+serialized_models_path = basedir / Path('app/ml_models/serialized_models/')
 
 # Get iris data
 iris = pd.read_csv(data_path / 'iris.csv')
@@ -35,7 +35,7 @@ preds = model.predict(X_test)
 print(f'Model accuracy on test set {sum(preds == y_test)/len(y_test)}')
 
 # Train model on all data
-model.fit(X,y)
+model.fit(X, y)
 
 # Serialize model
 model.write_model(fname=serialized_models_path / 'model.pickle')
