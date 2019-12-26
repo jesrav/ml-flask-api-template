@@ -1,154 +1,54 @@
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.preprocessing import LabelEncoder
 import pickle as pickle
-import pandas as pd
+from datetime import datetime
+from abc import ABCMeta, abstractmethod
+from sklearn.ensemble import RandomForestClassifier
+from marshmallow_dataframe import RecordsDataFrameSchema
+import json
+from apispec import APISpec
+from apispec.ext.marshmallow import MarshmallowPlugin
 
 
-class IrisClassifier(object):
+class BaseModel(metaclass=ABCMeta):
     """
-    Iris classifier.
-    Wraps the sklearn k-nearest kneighbors class in order to:
-    - Have fit and train methods take data frames and validate feature names.
-    - Have method for predicting single instance, to be used in api.
+    Base class for models
+
+    The class has a save and load method for serializing model objects.
+    It enforces implementation of a fit and predict method and a model name attribute.
     """
-    def __init__(self ,n_neighbors=5):
-        self.n_neighbors = n_neighbors
-        self.target = 'species'
-        self.features = [
-            'sepal_length', 
-            'sepal_width', 
-            'petal_length', 
-            'petal_width'
-        ]
-        self.classifier = KNeighborsClassifier(n_neighbors=n_neighbors)
-        self.label_encoder_species = LabelEncoder()
-        
-    def fit(self, X, y):
-        """Fit the iris classification model
+    def __init__(self):
+        self.model_initiated_dt = datetime.utcnow()
 
-        Parameters
-        ----------
-        X : Data frame with required features:
-            "sepal_length": float
-            "sepal_width": float
-            "petal_length": float
-            "petal_width": float
-            
-        y : Pandas series of type str, containing the species.
+    @property
+    @classmethod
+    @abstractmethod
+    def MODEL_NAME(self):
+        pass
 
-        Returns
-        -------
-        self : object
-            Returns self.
-        """
-        assert isinstance(X, pd.DataFrame), "X must be a Pandas data frame"
-        assert all(
-            [col in X.columns for col in self.features]
-        ), "X must contain the features {}".format(self.features)
-        assert (
-            isinstance(y, pd.Series) and y.dtypes == "object"
-        ), "Y must be a Pandas series, of type string"
-        assert X.shape[0] == y.shape[0], "X and y must have same number of rows"
+    # @property
+    # @abstractmethod
+    # def input_schema(self):
+    #     raise
+    #
+    # @property
+    # @abstractmethod
+    # def output_schema(self):
+    #     raise
 
-        X_copy = X.copy()
-        y_copy = y.copy()
+    @abstractmethod
+    def fit(self):
+        pass
 
-        # Sort columns
-        X_copy = X_copy[self.features]
+    @abstractmethod
+    def predict(self):
+        pass
 
-        # Fit label encoder for species
-        y_copy = self.label_encoder_species.fit_transform(y_copy)
+    def __str__(self):
+        return f'Model: {self.MODEL_NAME},  initiated at {self.model_initiated_dt}'
 
-        # fit classifier
-        self.classifier.fit(X_copy, y_copy)
-
-        return self
-
-    def predict(self, X):
-        """Predict the species for the provided data
-
-        Parameters
-        ----------
-        X : Data frame with required features:
-            "sepal_length": float
-            "sepal_width": float
-            "petal_length": float
-            "petal_width": float
-            
-        Returns
-        -------
-        y : Pandas series of type str
-            Predicted species
-        """
-        assert isinstance(X, pd.DataFrame), "X must be a Pandas data frame"
-        assert all(
-            [col in X.columns for col in self.features]
-        ), "X must contain the features {}".format(self.features)
-        
-        X_copy = X.copy()
-
-        # Sort columns
-        X_copy = X_copy[self.features]
-
-        # Predict
-        encoded_predictions = self.classifier.predict(X_copy)
-
-        # Transform predictions to species label
-        predictions = self.label_encoder_species.inverse_transform(
-            encoded_predictions
-        )
-        return predictions
-
-    def single_prediction(
-        self, 
-        sepal_length, 
-        sepal_width, 
-        petal_length, 
-        petal_width
-    ):
-        """Predict a single target variable
-
-        Parameters
-        ----------
-        sepal_length : float
-            Sepal length
-        sepal_width : float
-            Sepal width
-        petal_length : float
-            Petal length
-        petal_width : float
-            Petal width
-      
-        Returns
-        -------
-        y : str
-            Predicted species
-        """
-        assert isinstance(sepal_length, float), "col_latitude must be a float"
-        assert isinstance(sepal_width, float), "col_latitude must be a float"
-        assert isinstance(petal_length, float), "col_latitude must be a float"
-        assert isinstance(petal_width, float), "col_latitude must be a float"
-      
-        # Set input parameters as columns in a data frame
-        df_input = pd.DataFrame([[
-                sepal_length, 
-                sepal_width, 
-                petal_length, 
-                petal_width
-            ]],
-            columns=self.features,
-        )
-
-        return self.predict(df_input)[0]
-
-    def write_model(self, **kwargs):
+    def save(self, **kwargs):
         """Serialize model to file or variable
         """
-        serialize_dict = {
-            "n_neighbors": self.n_neighbors,
-            "classifier": self.classifier,
-            "label_encoder_species": self.label_encoder_species,
-        }
+        serialize_dict = self.__dict__
 
         if "fname" in kwargs.keys():
             fname = kwargs["fname"]
@@ -158,14 +58,12 @@ class IrisClassifier(object):
             pickled = pickle.dumps(serialize_dict)
             return pickled
 
-    @staticmethod
-    def read_model(serialized):
-        """Deserialize model from file or variable
-        """
+    def load(self, serialized):
+        """Deserialize model from file or variable"""
         assert isinstance(serialized, str) or isinstance(
             serialized, bytes
         ), "serialized must be a string (filepath) or a bytes object with the serialized model"
-        model = IrisClassifier()
+        model = self.__class__()
 
         if isinstance(serialized, str):
             with open(serialized, "rb") as f:
@@ -173,10 +71,66 @@ class IrisClassifier(object):
         else:
             serialize_dict = pickle.loads(serialized)
 
-        model.n_neighbors = serialize_dict["n_neighbors"]
-        model.classifier = serialize_dict["classifier"]
-        model.label_encoder_species = serialize_dict[
-            "label_encoder_species"
-        ]
+        # Set attributes of model
+        model.__dict__ = serialize_dict
+
         return model
 
+
+class RandomForestClassifierModel(BaseModel):
+    MODEL_NAME = 'Random forest model'
+
+    def __init__(
+            self,
+            features=None,
+            input_dtypes=None,
+            random_forest_params={'n_estimators': 100, 'max_depth': 30}
+    ):
+        super().__init__()
+        self.features = features
+        self.input_dtypes = None
+        self.random_forest_params = random_forest_params
+        self.model = RandomForestClassifier(**random_forest_params)
+
+    def fit(self, X, y):
+        if self.input_dtypes is None:
+            self.input_dtypes = X[self.features].dtypes
+        self.model.fit(X[self.features], y)
+        return self.model
+
+    def predict(self, X):
+        # assert all(list(X.columns) == self.features), f'The following features must be in X: {self.features}'
+        assert X[self.features].dtypes.to_dict() == self.input_dtypes.to_dict(), f'Dtypes must be: {self.input_dtypes.to_dict()}'
+        predictions = self.model.predict(X[self.features])
+        return predictions
+
+    def get_model_input_schema(self):
+        class ModelInputSchema(RecordsDataFrameSchema):
+            """Automatically generated schema for model input dataframe"""
+            class Meta:
+                dtypes = self.input_dtypes
+        return ModelInputSchema
+
+    def record_dict_to_model_input(self, dict_data):
+        model_input_schema = self.get_model_input_schema()()
+        return model_input_schema.load(dict_data)
+
+    def get_api_spec(self):
+        # Create an APISpec
+        spec = APISpec(
+            title="Prediction open api spec",
+            version="1.0.0",
+            openapi_version="3.0.2",
+            plugins=[MarshmallowPlugin()],
+        )
+        ModelInputSchema = self.get_model_input_schema()
+        spec.components.schema("predict", schema=ModelInputSchema)
+        spec.path(
+            path="/predict/",
+            operations=dict(
+                post=dict(
+                    responses={"200": {"content": {"application/json": {"schema": "ModelInputSchema"}}}}
+                )
+            ),
+        )
+        return spec

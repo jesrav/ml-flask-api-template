@@ -10,10 +10,13 @@ gunicorn = "*"
 python-dotenv = "*"
 scikit-learn = "*"
 pandas = "*"
+marshmallow-dataframe = "*"
+apispec = "*"
 
 [scripts]
 start = "flask run --reload"
 train = "python train_iris_classifier/train_iris_classifier.py"
+
 [requires]
 python_version = "3.6"
 

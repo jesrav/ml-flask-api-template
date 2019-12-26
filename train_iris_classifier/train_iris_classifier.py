@@ -8,7 +8,7 @@ basedir = Path(__file__).resolve().parents[1]
 sys.path.append(str(basedir))
 
 # Import model class
-from app.ml_models.model_classes.iris_classifier import IrisClassifier
+from app.ml_models.model_classes.iris_classifier import RandomForestClassifierModel
 
 # Paths
 data_path = Path('train_iris_classifier')
@@ -27,7 +27,7 @@ X = iris[features]
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=7)
 
 # Train and evaluate a classifier
-model = IrisClassifier(n_neighbors=4)
+model = RandomForestClassifierModel(features=features)
 
 model.fit(X_train,y_train)
 preds = model.predict(X_test)
@@ -38,4 +38,7 @@ print(f'Model accuracy on test set {sum(preds == y_test)/len(y_test)}')
 model.fit(X, y)
 
 # Serialize model
-model.write_model(fname=serialized_models_path / 'model.pickle')
+model.save(fname=serialized_models_path / 'model.pickle')
+
+with open('openapi_specification.yaml', 'w') as f:
+    f.write(model.get_api_spec().to_yaml())
